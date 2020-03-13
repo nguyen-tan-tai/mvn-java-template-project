@@ -1,0 +1,7 @@
+{
+    "database": {
+        "host": "jdbc:mysql://localhost:3306/sakura_test?useUnicode=true&characterEncoding=utf-8&useSSL=false&connectTimeout=600000&socketTimeout=600000",
+        "username": "sakura",
+        "password": "hana"
+    }
+}
