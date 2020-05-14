@@ -3,8 +3,14 @@ package framework;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 import javax.inject.Inject;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import caphe.Config;
 
 public class ContainerRegistry {
     private static Map<Class<?>, Object> container = new HashMap<>();
@@ -52,5 +58,13 @@ public class ContainerRegistry {
 
     public static <T> boolean exist(Class<T> clazz) {
         return container.containsKey(clazz);
+    }
+
+    public static void init(Properties properties, Class<?>... clazzes) {
+        ContainerRegistry.bind(Config.class, ConfigFactory.loadConfig(Config.class, properties));
+        ContainerRegistry.bind(Logger.class, LogManager.getLogger());
+        for (Class<?> clazz : clazzes) {
+            ContainerRegistry.selfRegister(clazz);
+        }
     }
 }

@@ -10,13 +10,11 @@ import org.junit.Rule;
 import org.junit.rules.TemporaryFolder;
 import org.junit.rules.TestName;
 
-import caphe.Config;
-
 public abstract class AbstractTest {
     static {
-        Properties arguments = new Properties();
-        arguments.setProperty("config.file", "src/test/resources/config.test.json");
-        ContainerRegistry.bind(Config.class, ConfigFactory.loadConfig(Config.class, arguments));
+        Properties properties = new Properties();
+        properties.setProperty("config.file", "src/test/resources/config.test.json");
+        ContainerRegistry.init(properties);
     }
 
     @Rule

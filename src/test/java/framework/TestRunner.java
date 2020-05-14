@@ -1,42 +1,26 @@
 package framework;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-
-import javax.inject.Inject;
 
 import org.junit.Test;
 import org.junit.runner.Description;
-import org.junit.runner.Runner;
 import org.junit.runner.notification.RunNotifier;
+import org.junit.runners.BlockJUnit4ClassRunner;
+import org.junit.runners.model.InitializationError;
 
-public class TestRunner extends Runner {
+public class TestRunner extends BlockJUnit4ClassRunner {
 
-    private Class<?> testClass;
+    public Class<?> testClass;
 
-    public TestRunner(Class<?> testClass) {
-        super();
+    public TestRunner(Class<?> testClass) throws InitializationError {
+        super(testClass);
         this.testClass = testClass;
-    }
-
-    @Override
-    public Description getDescription() {
-        return Description.createTestDescription(testClass, "My runner description");
     }
 
     @Override
     public void run(RunNotifier notifier) {
         try {
-            Object testObject = testClass.newInstance();
-            for (Field field : this.testClass.getFields()) {
-                if (field.getAnnotation(Inject.class) != null) {
-                    if (ContainerRegistry.exist(field.getType())) {
-                        field.set(testObject, ContainerRegistry.get(field.getType()));
-                    } else {
-                        field.set(testObject, ContainerRegistry.newInstance(field.getType()));
-                    }
-                }
-            }
+            Object testObject = ContainerRegistry.selfRegister(this.testClass);
             for (Method method : testClass.getMethods()) {
                 if (method.isAnnotationPresent(Test.class)) {
                     notifier.fireTestStarted(Description.createTestDescription(testClass, method.getName()));

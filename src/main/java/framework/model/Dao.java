@@ -18,6 +18,8 @@ import javax.inject.Inject;
 
 import org.apache.logging.log4j.Logger;
 
+import com.google.common.base.CaseFormat;
+
 public abstract class Dao<T extends Entity> {
 
     @Inject
@@ -34,10 +36,12 @@ public abstract class Dao<T extends Entity> {
 
     public Long insert(T entity) {
         try (Connection connection = this.dataSource.getConnection()) {
-            try (PreparedStatement pstm = connection.prepareStatement(this.entityManager.getInsertStatementQuery(),
-                    Statement.RETURN_GENERATED_KEYS)) {
-                pstm.executeUpdate();
-                try (ResultSet rs = pstm.getGeneratedKeys()) {
+            try (PreparedStatement preparedStatement = connection
+                    .prepareStatement(this.entityManager.getInsertStatementQuery(), Statement.RETURN_GENERATED_KEYS)) {
+                this.entityManager.preparedInsert(preparedStatement, entity);
+                logger.debug(preparedStatement.toString());
+                preparedStatement.executeUpdate();
+                try (ResultSet rs = preparedStatement.getGeneratedKeys()) {
                     rs.next();
                     return rs.getLong(1);
                 }
@@ -49,9 +53,11 @@ public abstract class Dao<T extends Entity> {
 
     public int update(T entity) {
         try (Connection connection = this.dataSource.getConnection()) {
-            try (PreparedStatement pstm = connection
+            try (PreparedStatement preparedStatement = connection
                     .prepareStatement(this.entityManager.getUpdateStatementQuery(entity))) {
-                return pstm.executeUpdate();
+                this.entityManager.preparedUpdate(preparedStatement, entity);
+                logger.debug(preparedStatement.toString());
+                return preparedStatement.executeUpdate();
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -70,6 +76,7 @@ public abstract class Dao<T extends Entity> {
     }
 
     public <U> List<U> selectBySql(String sql, Class<? extends U> clazz) {
+        logger.debug(sql);
         try (Connection connection = this.dataSource.getConnection()) {
             try (Statement Statement = connection.createStatement()) {
                 try (ResultSet rs = Statement.executeQuery(sql)) {
@@ -86,6 +93,7 @@ public abstract class Dao<T extends Entity> {
     }
 
     public <U> U selectFirstBySql(String sql, Class<? extends U> clazz) {
+        logger.debug(sql);
         try (Connection connection = this.dataSource.getConnection()) {
             try (Statement Statement = connection.createStatement()) {
                 try (ResultSet rs = Statement.executeQuery(sql)) {
@@ -100,40 +108,29 @@ public abstract class Dao<T extends Entity> {
         }
     }
 
-    public void condasf(Field field, T entity) {
-        if (field.getType().equals(Boolean.class)) {
-        } else if (field.getType().equals(Short.class)) {
-        } else if (field.getType().equals(Integer.class)) {
-        } else if (field.getType().equals(Long.class)) {
-        } else if (field.getType().equals(BigDecimal.class)) {
-        } else if (field.getType().equals(LocalDate.class)) {
-        } else if (field.getType().equals(LocalDateTime.class)) {
-        } else {
-        }
-    }
-
     protected <U> U convertResultSetToObject(ResultSet rs, Class<? extends U> clazz) {
         try {
             U object = clazz.newInstance();
             for (Field field : clazz.getFields()) {
+                String fieldName = CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, field.getName());
                 if (field.getType().equals(Boolean.class)) {
-                    field.set(object, rs.getBoolean(field.getName()));
+                    field.set(object, rs.getBoolean(fieldName));
                 } else if (field.getType().equals(Short.class)) {
-                    field.set(object, rs.getShort(field.getName()));
+                    field.set(object, rs.getShort(fieldName));
                 } else if (field.getType().equals(Integer.class)) {
-                    field.set(object, rs.getInt(field.getName()));
+                    field.set(object, rs.getInt(fieldName));
                 } else if (field.getType().equals(Long.class)) {
-                    field.set(object, rs.getLong(field.getName()));
+                    field.set(object, rs.getLong(fieldName));
                 } else if (field.getType().equals(BigDecimal.class)) {
-                    field.set(object, rs.getBigDecimal(field.getName()));
+                    field.set(object, rs.getBigDecimal(fieldName));
                 } else if (field.getType().equals(LocalDate.class)) {
-                    field.set(object, Instant.ofEpochMilli(rs.getDate(field.getName()).getTime())
-                            .atZone(ZoneId.of("UTC")).toLocalDate());
+                    field.set(object, Instant.ofEpochMilli(rs.getDate(fieldName).getTime()).atZone(ZoneId.of("UTC"))
+                            .toLocalDate());
                 } else if (field.getType().equals(LocalDateTime.class)) {
-                    field.set(object, Instant.ofEpochMilli(rs.getDate(field.getName()).getTime())
-                            .atZone(ZoneId.of("UTC")).toLocalDateTime());
+                    field.set(object, Instant.ofEpochMilli(rs.getDate(fieldName).getTime()).atZone(ZoneId.of("UTC"))
+                            .toLocalDateTime());
                 } else {
-                    field.set(object, rs.getString(field.getName()));
+                    field.set(object, rs.getString(fieldName));
                 }
             }
             return object;
