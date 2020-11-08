@@ -4,5 +4,5 @@ import caphe.model.entity.orm.AbstractKanji;
 
 @SuppressWarnings("serial")
 public class Kanji extends AbstractKanji {
-
+    
 }

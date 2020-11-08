@@ -1,8 +1,0 @@
-{
-    "string": "test",
-    "piyo": {
-        "integer": 1000,
-        "bool": true,
-        "hoge": null
-    }
-}

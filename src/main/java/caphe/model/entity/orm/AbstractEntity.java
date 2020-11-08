@@ -5,7 +5,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
-import framework.model.Entity;
+import mvc.model.Entity;
 
 @SuppressWarnings("serial")
 public abstract class AbstractEntity extends Entity {

@@ -3,14 +3,10 @@ package caphe.model.dao;
 import javax.inject.Inject;
 
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
 import caphe.model.entity.impl.Kanji;
-import framework.AbstractTest;
-import framework.TestRunner;
 
-@RunWith(TestRunner.class)
-public class KanjiDaoTest extends AbstractTest {
+public class KanjiDaoTest {
 
     @Inject
     public KanjiDao JCharacterDao;
@@ -20,7 +16,6 @@ public class KanjiDaoTest extends AbstractTest {
         Kanji jcharacter = new Kanji();
         jcharacter.kanji = "hoge";
         jcharacter.soNet = 10;
-        jcharacter.amHanViet = "meaning";
         JCharacterDao.insert(jcharacter);
     }
 
@@ -30,7 +25,6 @@ public class KanjiDaoTest extends AbstractTest {
         jcharacter.id = 1L;
         jcharacter.kanji = "fuga";
         jcharacter.soNet = 20;
-        jcharacter.amHanViet = "no";
         JCharacterDao.update(jcharacter);
     }
 }

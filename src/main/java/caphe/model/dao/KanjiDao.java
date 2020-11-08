@@ -1,7 +1,7 @@
 package caphe.model.dao;
 
 import caphe.model.entity.impl.Kanji;
-import framework.model.Dao;
+import mvc.model.Dao;
 
 public class KanjiDao extends Dao<Kanji> {
 

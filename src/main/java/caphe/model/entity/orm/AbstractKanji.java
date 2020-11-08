@@ -1,45 +1,46 @@
 package caphe.model.entity.orm;
 
 import javax.persistence.Column;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 
 @SuppressWarnings("serial")
 public abstract class AbstractKanji extends AbstractEntity {
-    @Column(length = 50)
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    public Long id;
+
+    @Column
     public String kanji;
 
-    @Column(precision = 4, columnDefinition = "tinyint")
-    public Integer phanLoai;
+    @Column
+    public String unicode;
 
-    @Column(precision = 6, columnDefinition = "smallint")
-    public Integer thuTu;
+    @Column
+    public String amViet;
 
-    @Column(precision = 4, columnDefinition = "tinyint")
-    public Integer doKho;
-
-    @Column(precision = 4, columnDefinition = "tinyint")
+    @Column
     public Integer soNet;
 
-    @Column(precision = 6, columnDefinition = "smallint")
+    @Column
+    public String boThu;
+
+    @Column
+    public String hinhThai;
+
+    @Column
+    public String netBut;
+
+    @Column
     public Integer frequency;
 
-    @Column(length = 50)
-    public String bienThe;
+    @Column
+    public Integer level;
 
-    @Column(length = 50)
-    public String radical;
-
-    @Column(length = 1024)
-    public String amHanViet;
-
-    @Column(length = 1024)
-    public String nghia;
-
-    @Column(length = 1024)
-    public String mean;
-
-    @Column(length = 1024)
+    @Column
     public String on;
 
-    @Column(length = 1024)
+    @Column
     public String kun;
 }
